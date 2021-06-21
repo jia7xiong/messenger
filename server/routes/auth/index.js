@@ -26,6 +26,7 @@ router.post("/register", async (req, res, next) => {
       process.env.SESSION_SECRET,
       { expiresIn: 86400 }
     );
+    res.cookie('messenger-token', token, { httpOnly: true });
     res.json({
       ...user.dataValues,
       token,
@@ -64,6 +65,7 @@ router.post("/login", async (req, res, next) => {
         process.env.SESSION_SECRET,
         { expiresIn: 86400 }
       );
+      res.cookie('messenger-token', token, { httpOnly: true });
       res.json({
         ...user.dataValues,
         token,
@@ -75,6 +77,8 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.delete("/logout", (req, res, next) => {
+  // remove the cookie with an expiry date in the past and a empty string value for the token
+  res.cookie('messenger-token', '', { httpOnly: true, expires: new Date(Date.now() - 1000)}); 
   res.sendStatus(204);
 });
 
