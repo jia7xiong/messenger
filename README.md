@@ -20,6 +20,15 @@ Create a .env file in the server directory and add your session secret (this can
 SESSION_SECRET = "your session secret"
 ```
 
+Also, add and fill out the following to .env file you just created.
+```
+DB_USER = postgres
+DB_PASSWORD = "your password"
+DB_NAME = messenger
+DB_HOST = localhost
+DB_PORT = 5432
+```
+
 In the server folder, install dependencies and then seed the database:
 
 ```
