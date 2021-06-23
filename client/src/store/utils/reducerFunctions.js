@@ -6,8 +6,11 @@ export const addMessageToStore = (state, payload) => {
       id: message.conversationId,
       otherUser: sender,
       messages: [message],
+      user1: null,
     };
     newConvo.latestMessageText = message.text;
+    newConvo.unreadCount1 = 1;
+    newConvo.unreadCount2 = 0;
     return [newConvo, ...state];
   }
 
@@ -16,6 +19,13 @@ export const addMessageToStore = (state, payload) => {
       const convoCopy = { ...convo };
       convoCopy.messages.push(message);
       convoCopy.latestMessageText = message.text;
+      if (message.senderId === convoCopy.otherUser.id) {
+        if (convoCopy.hasOwnProperty('user1')) convoCopy.unreadCount1 += 1;
+        else convoCopy.unreadCount2 += 1;
+      } else {
+        if (convoCopy.hasOwnProperty('user1')) convoCopy.unreadCount2 += 1;
+        else convoCopy.unreadCount1 += 1;
+      }
 
       return convoCopy;
     } else {
@@ -75,7 +85,23 @@ export const addNewConvoToStore = (state, recipientId, message) => {
       newConvo.id = message.conversationId;
       newConvo.messages.push(message);
       newConvo.latestMessageText = message.text;
+      newConvo.user1 = null;
+      newConvo.unreadCount1 = 0;
+      newConvo.unreadCount2 = 1;
       return newConvo;
+    } else {
+      return convo;
+    }
+  });
+};
+
+export const addReadMessagesToStore = (state, id) => {
+  return state.map((convo) => {
+    if (convo.id === id) {
+      const convoCopy = { ...convo };
+      if (convoCopy.hasOwnProperty('user1')) convoCopy.unreadCount1 = 0;
+      else convoCopy.unreadCount2 = 0;
+      return convoCopy;
     } else {
       return convo;
     }
