@@ -95,12 +95,21 @@ export const addNewConvoToStore = (state, recipientId, message) => {
   });
 };
 
-export const addReadMessagesToStore = (state, id) => {
+export const addReadMessagesToStore = (state, payload) => {
+  const {id, unreadId, deCount} = payload
   return state.map((convo) => {
     if (convo.id === id) {
       const convoCopy = { ...convo };
-      if (convoCopy.hasOwnProperty('user1')) convoCopy.unreadCount1 = 0;
-      else convoCopy.unreadCount2 = 0;
+
+      // Clear the notification upon currentUser clicking the siderbar chat.
+      if (deCount) {
+        if (convoCopy.hasOwnProperty('user1')) convoCopy.unreadCount1 = 0;
+        else convoCopy.unreadCount2 = 0;
+      }
+     
+      convoCopy.messages.forEach((mes, index)=>{
+        if (unreadId.includes(mes.id)) convoCopy.messages[index].readStatus = true;
+      })
       return convoCopy;
     } else {
       return convo;

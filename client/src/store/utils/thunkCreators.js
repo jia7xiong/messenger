@@ -82,6 +82,13 @@ const sendMessage = (data, body) => {
   });
 };
 
+const sendRead = (id, unreadId) => {
+  socket.emit("read", {
+    id: id,
+    unreadId: unreadId,
+  });
+};
+
 // message format to send: {recipientId, text, conversationId}
 // conversationId will be set to null if its a brand new conversation
 export const postMessage = (body) => (dispatch) => {
@@ -112,7 +119,8 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
 export const setRead = (unreadId, id) => async(dispatch) => {
   try {
     axios.put("/api/messages", {idgroup: unreadId});
-    dispatch(setReadMessages(id));
+    dispatch(setReadMessages(id, unreadId, true));
+    sendRead(id, unreadId);
   } catch (error) {
     console.error(error);
   }
