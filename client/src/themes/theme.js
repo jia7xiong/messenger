@@ -14,7 +14,12 @@ export const theme = createMuiTheme({
     MuiInput: {
       input: {
         fontWeight: "bold"
-      }
+      },
+      underline: {
+        '&:hover:not($disabled):not($focused):not($error):before': {
+            borderBottom: `2px solid #3A8DFF`
+        }
+      },
     }
   },
   palette: {
