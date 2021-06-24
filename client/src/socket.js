@@ -24,7 +24,7 @@ socket.on("connect", () => {
   });
 
   socket.on("read", (data) => {
-    store.dispatch(setReadMessages(data.id, data.unreadId, false));
+    store.dispatch(setReadMessages(data.id, data.unreadIds, false));
   });
 });
 

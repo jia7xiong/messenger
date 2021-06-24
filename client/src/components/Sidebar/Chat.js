@@ -26,8 +26,8 @@ class Chat extends Component {
     await this.props.setActiveChat(otherUser.username);
 
     // List the messageId of all unread messages sent by otherUser.
-    const unreadId = conversation.messages.filter(message=>message.senderId===otherUser.id && message.readStatus===false).map(message=>message.id)
-    if (unreadId.length !== 0) await this.props.setRead(unreadId, conversation.id);
+    const unreadIds = conversation.messages.filter(message=>message.senderId===otherUser.id && message.readStatus===false).map(message=>message.id)
+    if (unreadIds.length !== 0) await this.props.setRead(unreadIds, conversation.id);
   };
 
   render() {

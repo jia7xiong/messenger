@@ -20,11 +20,9 @@ export const addMessageToStore = (state, payload) => {
       convoCopy.messages.push(message);
       convoCopy.latestMessageText = message.text;
       if (message.senderId === convoCopy.otherUser.id) {
-        if (convoCopy.hasOwnProperty('user1')) convoCopy.unreadCount1 += 1;
-        else convoCopy.unreadCount2 += 1;
+        convoCopy.hasOwnProperty('user1') ? convoCopy.unreadCount1 += 1 : convoCopy.unreadCount2 += 1;
       } else {
-        if (convoCopy.hasOwnProperty('user1')) convoCopy.unreadCount2 += 1;
-        else convoCopy.unreadCount1 += 1;
+        convoCopy.hasOwnProperty('user1') ? convoCopy.unreadCount2 += 1 : convoCopy.unreadCount1 += 1;
       }
 
       return convoCopy;
@@ -96,20 +94,25 @@ export const addNewConvoToStore = (state, recipientId, message) => {
 };
 
 export const addReadMessagesToStore = (state, payload) => {
-  const {id, unreadId, deCount} = payload
+  const {id, unreadIds, deCount} = payload
   return state.map((convo) => {
     if (convo.id === id) {
       const convoCopy = { ...convo };
 
       // Clear the notification upon currentUser clicking the siderbar chat.
       if (deCount) {
-        if (convoCopy.hasOwnProperty('user1')) convoCopy.unreadCount1 = 0;
-        else convoCopy.unreadCount2 = 0;
+        convoCopy.hasOwnProperty('user1') ? convoCopy.unreadCount1 = 0 : convoCopy.unreadCount2 = 0;
       }
      
-      convoCopy.messages.forEach((mes, index)=>{
-        if (unreadId.includes(mes.id)) convoCopy.messages[index].readStatus = true;
-      })
+      convoCopy.messages = convoCopy.messages.map((message) => {
+        if (unreadIds.includes(message.id)) {
+          const mesCopy = {...message};
+          mesCopy.readStatus = true;
+          return mesCopy;
+        }
+        else return message;
+      });
+      
       return convoCopy;
     } else {
       return convo;
