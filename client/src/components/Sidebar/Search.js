@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { FormControl, FilledInput, InputAdornment } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import { makeStyles } from "@material-ui/core/styles";
@@ -25,11 +25,8 @@ const useStyles = makeStyles((theme)=>({
 }));
 
 function Search(props) {
-  const [submitId, setSubmitID] = useState(0);
-
   const handleSubmit = (event) => {
     event.preventDefault();
-    setSubmitID(submitId+1);
   };
 
   const { handleChange } = props;

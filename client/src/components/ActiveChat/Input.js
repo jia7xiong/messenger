@@ -19,6 +19,8 @@ const useStyles = makeStyles((theme)=>({
 
 function Input (props) {
   const [text, setText] = useState("");
+  const { otherUser, conversationId, user, postMessage } = props;
+  const classes = useStyles();
 
   const handleChange = (event) => {
     setText(event.target.value);
@@ -36,9 +38,6 @@ function Input (props) {
     await postMessage(reqBody);
     setText("");
   };
-  
-  const { otherUser, conversationId, user, postMessage } = props;
-  const classes = useStyles();
 
   return (
     <form className={classes.root} onSubmit={handleSubmit}>
