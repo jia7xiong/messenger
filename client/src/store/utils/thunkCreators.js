@@ -85,16 +85,15 @@ const sendMessage = (data, body) => {
 // conversationId will be set to null if its a brand new conversation
 export const postMessage = (body) => async(dispatch) => {
   try {
-    // const { data } = await axios.post("/api/messages", body);
     const data = await saveMessage(body);
 
     if (!body.conversationId) {
       dispatch(addConversation(body.recipientId, data.message));
-    } else {
+    } else if (data.message) {
       dispatch(setNewMessage(data.message));
     }
 
-    sendMessage(data, body);
+    if (data.message) sendMessage(data, body);
   } catch (error) {
     console.error(error);
   }
