@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
   intro: {
     color: 'white',
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: "bold",
     marginTop: '10%',
     [theme.breakpoints.up('sm')]: {
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Landing = () => {
+const Banner = () => {
   const classes = useStyles();
   return (
     <Grid item xs={5} className={classes.picture}>
@@ -41,7 +41,7 @@ const Landing = () => {
         className={classes.landing}
       >
         <Grid>
-          <img src="/images/bubble.svg" width='90px'/>
+          <img src="/images/bubble.svg" alt="chat bubble" width='90px'/>
         </Grid>
         <Typography align='center' className={classes.intro}>
           Converse with anyone with any language
@@ -51,4 +51,4 @@ const Landing = () => {
   );
 };
 
-export default Landing;
+export default Banner;
