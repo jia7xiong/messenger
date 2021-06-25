@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
   intro: {
     color: 'white',
-    fontSize: 22,
+    fontSize: 30,
     fontWeight: "bold",
     marginTop: '10%',
     [theme.breakpoints.up('sm')]: {

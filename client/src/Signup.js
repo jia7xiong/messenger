@@ -12,55 +12,17 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { register } from "./store/utils/thunkCreators";
 import Landing from "./components/Landing";
+import Switcher from "./components/Switcher";
 
 const useStyles = makeStyles((theme) => ({
-  switch: {
-    width: '100%',
-    paddingTop: '20px',
-    paddingRight: '50px',
-    // [theme.breakpoints.down('lg')]: {
-    //   marginBottom: '34%',
-    // },
-    [theme.breakpoints.down('md')]: {
-      marginBottom: '45%',
-    },
-    [theme.breakpoints.down('sm')]: {
-      marginBottom: '72%',
-    },
-    [theme.breakpoints.down('xs')]: {
-      marginBottom: '100%',
-    },
-  },
-  caption: {
-    color: "#9CADC8",
-  },
-  switchButton: {
-    padding: "15px 40px ",
-    marginLeft: '30px',
-    color: theme.palette.primary.main,
-    backgroundColor: 'white',
-    boxShadow: '0px 0px 10px #E3E6EA',
-  },
-  signup: {
-    height: '100vh',
-    // [theme.breakpoints.down('lg')]: {
-    //   marginBottom: '38%',
-    // },
-    [theme.breakpoints.down('sm')]: {
-      marginBottom: '60%',
-    },
-    [theme.breakpoints.down('xs')]: {
-      marginBottom: '85%',
-    },
+  formBlock: {
+    minHeight: '100vh',
     paddingBottom: '15%',
   },
   form: {
     width: '40vw',
     marginBottom: '60px',
     [theme.breakpoints.down('sm')]: {
-      width: '53vw',
-    },
-    [theme.breakpoints.down('xs')]: {
       width: '58vw',
     },
   },
@@ -108,22 +70,14 @@ const Login = (props) => {
     <Grid container>
       <Landing/>
       <Grid item xs={7}>
-        <Grid container justify="flex-end" alignItems="center" className={classes.switch}>
-          <Typography className={classes.caption}>
-            Already have an account?
-          </Typography>
-          <Button onClick={() => history.push("/login")} size="large" className={classes.switchButton}>
-              Login
-          </Button> 
-        </Grid>
-
+        <Switcher switchToSignup={false}/>
         <Grid 
           container 
           direction="column" 
           justify="center" 
           alignItems="center" 
-          wrap='nowrap'
-          className={classes.signup}
+          // wrap='nowrap'
+          className={classes.formBlock}
         >
           <form onSubmit={handleRegister}>
             <Grid>
