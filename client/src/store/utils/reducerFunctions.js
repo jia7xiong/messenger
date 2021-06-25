@@ -2,13 +2,30 @@ export const addMessageToStore = (state, payload) => {
   const { message, sender } = payload;
   // if sender isn't null, that means the message needs to be put in a brand new convo
   if (sender !== null) {
-    const newConvo = {
-      id: message.conversationId,
-      otherUser: sender,
-      messages: [message],
-    };
-    newConvo.latestMessageText = message.text;
-    return [newConvo, ...state];
+    // check in case that there is a fakeConvo
+    // thus the message can be displayed even when other clients are searching 
+    if (state.find(convo=>convo.otherUser.id===sender.id)) {
+      return state.map((convo) => {
+        if (convo.otherUser.id === sender.id) {
+          const convoCopy = { ...convo };
+          convoCopy.id = message.conversationId;
+          convoCopy.messages.push(message);
+          convoCopy.latestMessageText = message.text;
+          return convoCopy;
+        } else {
+          return convo;
+        }
+      });
+    } 
+    else {
+      const newConvo = {
+        id: message.conversationId,
+        otherUser: sender,
+        messages: [message],
+      };
+      newConvo.latestMessageText = message.text;
+      return [newConvo, ...state];
+    }
   }
 
   return state.map((convo) => {
