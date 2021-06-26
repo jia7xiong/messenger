@@ -29,7 +29,36 @@ const server = http.createServer(app);
  * Listen on provided port, on all network interfaces, and sync database.
  */
 
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, {allowRequest: async(req, callback) => { 
+  var allow = false; 
+
+  // Only when 'messenger-token' exists in cookie, 
+  // and the token decoded with the id matching one of user in our database, we allow the connection to server.
+  if (req.headers.cookie) 
+  {
+    var messengerToken;
+    const cookies = req.headers.cookie.split(';');
+    const tokenPrefix = 'messenger-token=';
+    messengerToken = cookies.find(cookie => cookie.includes(tokenPrefix));
+
+    if (messengerToken) {
+      const jwt = require("jsonwebtoken");
+      const { User } = require("../db/models");
+
+      messengerToken = messengerToken.replace(tokenPrefix, '');
+      await jwt.verify(messengerToken, process.env.SESSION_SECRET, async(err, decoded) => {
+        if (!err)
+          await User.findOne({
+            where: { id: decoded.id },
+          }).then((user) => {
+            if (user) allow = true;
+          });
+      });
+    }
+  } 
+
+  callback(null, allow);
+}});
 
 io.on("connection", (socket) => {
   socket.on("go-online", (id) => {
