@@ -59,7 +59,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("logout", (id) => {
-    if (onlineUsers.includes(id)) {
+    // set offline status of a user only when all his room is empty
+    socket.leave(`room#${id}`);
+    const isEmpty = !io.sockets.adapter.rooms.get(`room#${id}`);
+    if (onlineUsers.includes(id) && isEmpty) {
       userIndex = onlineUsers.indexOf(id);
       onlineUsers.splice(userIndex, 1);
       socket.broadcast.emit("remove-offline-user", id);

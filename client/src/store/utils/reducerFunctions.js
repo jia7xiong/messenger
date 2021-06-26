@@ -4,7 +4,8 @@ export const addMessageToStore = (state, payload) => {
   if (sender !== null) {
     // check in case that there is a fakeConvo
     // thus the message can be displayed even when other clients are searching 
-    if (state.find(convo=>convo.otherUser.id===sender.id)) {
+    const isConversationInState = state.some(convo => convo.otherUser.id === sender.id);
+    if (isConversationInState) {
       return state.map((convo) => {
         if (convo.otherUser.id === sender.id) {
           const convoCopy = { ...convo };
