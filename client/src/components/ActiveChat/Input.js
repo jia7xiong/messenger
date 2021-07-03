@@ -31,7 +31,7 @@ function Input (props) {
     // add sender user info if posting to a brand new convo, so that the other user will have access to username, profile pic, etc.
     const reqBody = {
       text: event.target.text.value,
-      recipientId: otherUser.id,
+      recipient: otherUser,
       conversationId: conversationId,
       sender: conversationId ? null : user,
     };
