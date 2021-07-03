@@ -94,9 +94,9 @@ export const addNewConvoToStore = (state, recipientId, message) => {
 };
 
 export const addReadMessagesToStore = (state, payload) => {
-  const {id, unreadIds, deCount} = payload
+  const {conversationId, senderId, deCount} = payload
   return state.map((convo) => {
-    if (convo.id === id) {
+    if (convo.id === conversationId) {
       const convoCopy = { ...convo };
 
       // Clear the notification upon currentUser clicking the siderbar chat.
@@ -104,8 +104,9 @@ export const addReadMessagesToStore = (state, payload) => {
         convoCopy.hasOwnProperty('user1') ? convoCopy.unreadCount1 = 0 : convoCopy.unreadCount2 = 0;
       }
      
+      // Update the status of all unread messages in the convo sent by otherUser to read
       convoCopy.messages = convoCopy.messages.map((message) => {
-        if (unreadIds.includes(message.id)) {
+        if (message.senderId === senderId && !message.readStatus) {
           const mesCopy = {...message};
           mesCopy.readStatus = true;
           return mesCopy;

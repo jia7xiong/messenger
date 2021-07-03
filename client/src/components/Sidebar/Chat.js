@@ -24,10 +24,7 @@ class Chat extends Component {
   handleClick = async (conversation) => {
     const otherUser = conversation.otherUser
     await this.props.setActiveChat(otherUser.username);
-
-    // List the messageId of all unread messages sent by otherUser.
-    const unreadIds = conversation.messages.filter(message=>message.senderId===otherUser.id && message.readStatus===false).map(message=>message.id)
-    if (unreadIds.length !== 0) await this.props.setRead(unreadIds, conversation.id);
+    await this.props.setRead(conversation.id, otherUser.id);
   };
 
   render() {
@@ -55,8 +52,8 @@ const mapDispatchToProps = (dispatch) => {
     setActiveChat: (id) => {
       dispatch(setActiveChat(id));
     },
-    setRead: (idgroup, id) => {
-      dispatch(setRead(idgroup, id));
+    setRead: (convoId, otherId) => {
+      dispatch(setRead(convoId, otherId));
     },
   };
 };

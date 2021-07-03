@@ -36,20 +36,13 @@ const SenderBubble = (props) => {
   const { time, text, otherUser, read } = props;
   
   // Use avatar under certain message sent by currentUser to indicate otherUser's read status.
-  return read ? (
+  return (
     <Box className={classes.root}>
       <Typography className={classes.date}>{time}</Typography>
       <Box className={classes.bubble}>
         <Typography className={classes.text}>{text}</Typography>
       </Box>
-      <Avatar alt={otherUser.username} src={otherUser.photoUrl} className={classes.read}/>
-    </Box>
-  ) : (
-    <Box className={classes.root}>
-      <Typography className={classes.date}>{time}</Typography>
-      <Box className={classes.bubble}>
-        <Typography className={classes.text}>{text}</Typography>
-      </Box>
+      {read && <Avatar alt={otherUser.username} src={otherUser.photoUrl} className={classes.read}/>}
     </Box>
   );
 };

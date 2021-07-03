@@ -82,10 +82,10 @@ const sendMessage = (data, body) => {
   });
 };
 
-const sendRead = (id, unreadIds) => {
+const sendRead = (conversationId, senderId) => {
   socket.emit("read", {
-    id: id,
-    unreadIds: unreadIds,
+    conversationId: conversationId,
+    senderId: senderId,
   });
 };
 
@@ -117,11 +117,11 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
   }
 };
 
-export const setRead = (unreadIds, id) => async(dispatch) => {
+export const setRead = (conversationId, senderId) => async(dispatch) => {
   try {
-    axios.put("/api/messages/readStatus", {idgroup: unreadIds});
-    dispatch(setReadMessages(id, unreadIds, true));
-    sendRead(id, unreadIds);
+    axios.patch(`/api/conversations/${conversationId}/unread`, {senderId: senderId});
+    dispatch(setReadMessages(conversationId, senderId, true));
+    sendRead(conversationId, senderId);
   } catch (error) {
     console.error(error);
   }

@@ -91,4 +91,28 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+router.patch("/:conversationId/unread", async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+
+    const {senderId} = req.body;
+    const {conversationId} = req.params;
+
+    // Update the status of all unread messenges in the convo sent by otherUser to read
+    await Message.update(
+      {readStatus: true}, 
+      {where: {
+        conversationId: conversationId,
+        senderId: senderId,
+        readStatus: false
+        }
+      }
+    );
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

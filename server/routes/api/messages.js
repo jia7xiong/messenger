@@ -45,26 +45,4 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.put("/readStatus", async (req, res, next) => {
-  try {
-    if (!req.user) {
-      return res.sendStatus(401);
-    }
-
-    const { idgroup } = req.body;
-
-    // Update all unread messenges status to read
-    await Message.update(
-      {readStatus: true}, 
-      {where: {
-        id: {
-          [Op.or]: idgroup}
-        },
-      }
-    );
-  } catch (error) {
-    next(error);
-  }
-});
-
 module.exports = router;
