@@ -104,15 +104,21 @@ export const addReadMessagesToStore = (state, payload) => {
         convoCopy.hasOwnProperty('user1') ? convoCopy.unreadCount1 = 0 : convoCopy.unreadCount2 = 0;
       }
      
-      // Update the status of all unread messages in the convo sent by otherUser to read
+      let lastReadId = -1
+      // Update the readStatus of all unread messages in the convo whose senderId match to ture
       convoCopy.messages = convoCopy.messages.map((message) => {
         if (message.senderId === senderId && !message.readStatus) {
           const mesCopy = {...message};
           mesCopy.readStatus = true;
+          lastReadId = mesCopy.id;
           return mesCopy;
         }
         else return message;
       });
+
+      // Update the id of last message read by otherUser
+      if (!deCount) {
+        convoCopy.lastReadId = lastReadId;}
       
       return convoCopy;
     } else {

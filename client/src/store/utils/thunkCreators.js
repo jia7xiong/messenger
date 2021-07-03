@@ -119,9 +119,11 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
 
 export const setRead = (conversationId, senderId) => async(dispatch) => {
   try {
-    axios.patch(`/api/conversations/${conversationId}/unread`, {senderId: senderId});
-    dispatch(setReadMessages(conversationId, senderId, true));
-    sendRead(conversationId, senderId);
+    if (conversationId) {
+      axios.patch(`/api/conversations/${conversationId}/unread`, {senderId: senderId});
+      dispatch(setReadMessages(conversationId, senderId, true));
+      sendRead(conversationId, senderId);
+    }
   } catch (error) {
     console.error(error);
   }

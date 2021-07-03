@@ -81,6 +81,13 @@ router.get("/", async (req, res, next) => {
         convoJSON.unreadCount1 = otherUnreadCount;
       }
 
+      // find the id of the last message read by otherUser
+      if (convoJSON.messages) {
+        const sortedMes = convoJSON.messages.slice().reverse();
+        const lastRead = sortedMes.find((mes) => mes.senderId===userId && mes.readStatus===true); 
+        convoJSON.lastReadId = lastRead ? lastRead.id : -1;
+      }
+
       convoJSON.messages.reverse();
       conversations[i] = convoJSON;
     }
@@ -100,7 +107,7 @@ router.patch("/:conversationId/unread", async (req, res, next) => {
     const {senderId} = req.body;
     const {conversationId} = req.params;
 
-    // Update the status of all unread messenges in the convo sent by otherUser to read
+    // Update the status of all unread messenges in the convo whose senderId match to read
     await Message.update(
       {readStatus: true}, 
       {where: {
