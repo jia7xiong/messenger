@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
@@ -15,24 +15,23 @@ const useStyles = makeStyles((theme)=>({
 }));
 
 function Home (props) {
-  const didMountRef = useRef();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { fetchConversations, logout, user } = props;
+  const classes = useStyles();
 
+  // fetch convos only on mount
   useEffect(() => {
-    if (!didMountRef.current) {
-      fetchConversations();
-      didMountRef.current = true;
-    }
-    else setIsLoggedIn(true);
-  }, [fetchConversations]);
+    fetchConversations();
+  }, []);
+
+  // set isLoggedIn when user.id gets updated
+  useEffect(() => {
+    setIsLoggedIn(true);
+  }, [user.id]);
 
   const handleLogout = async () => {
     await logout(user.id);
   };
- 
-  const classes = useStyles();
-
   if (!user.id) {
     // If we were previously logged in, redirect to login instead of register
     if (isLoggedIn) return <Redirect to="/login" />;
