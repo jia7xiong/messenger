@@ -77,15 +77,16 @@ const saveMessage = async (body) => {
 const sendMessage = (data, body) => {
   socket.emit("new-message", {
     message: data.message,
-    recipientId: body.recipientId,
+    recipient: body.recipient,
     sender: data.sender,
   });
 };
 
-const sendRead = (conversationId, senderId) => {
+const sendRead = (conversationId, senderId, readerId) => {
   socket.emit("read", {
     conversationId: conversationId,
     senderId: senderId,
+    readerId: readerId,
   });
 };
 
@@ -93,16 +94,15 @@ const sendRead = (conversationId, senderId) => {
 // conversationId will be set to null if its a brand new conversation
 export const postMessage = (body) => async(dispatch) => {
   try {
-    // const { data } = await axios.post("/api/messages", body);
     const data = await saveMessage(body);
 
     if (!body.conversationId) {
-      dispatch(addConversation(body.recipientId, data.message));
-    } else {
+      dispatch(addConversation(body.recipient.id, data.message));
+    } else if (data.message) {
       dispatch(setNewMessage(data.message));
     }
 
-    sendMessage(data, body);
+    if (data.message) sendMessage(data, body);
   } catch (error) {
     console.error(error);
   }
@@ -117,12 +117,12 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
   }
 };
 
-export const setRead = (conversationId, senderId) => async(dispatch) => {
+export const setRead = (conversationId, senderId, readerId) => async(dispatch) => {
   try {
     if (conversationId) {
       axios.patch(`/api/conversations/${conversationId}/unread`, {senderId: senderId});
       dispatch(setReadMessages(conversationId, senderId, true));
-      sendRead(conversationId, senderId);
+      sendRead(conversationId, senderId, readerId);
     }
   } catch (error) {
     console.error(error);

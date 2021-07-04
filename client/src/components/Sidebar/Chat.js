@@ -1,12 +1,12 @@
-import React, { Component } from "react";
+import React from "react";
 import { Box } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
-import { withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
 import { setRead  } from "../../store/utils/thunkCreators";
 import { connect } from "react-redux";
 
-const styles = {
+const useStyles = makeStyles((theme)=>({
   root: {
     borderRadius: 8,
     height: 80,
@@ -18,44 +18,53 @@ const styles = {
       cursor: "grab",
     },
   },
-};
+}));
 
-class Chat extends Component {
-  handleClick = async (conversation) => {
+function Chat (props) {
+  const { setActiveChat, conversation, setRead, user } = props;
+  const otherUser = conversation.otherUser;
+  const classes = useStyles();
+
+  const handleClick = async (conversation) => {
     const otherUser = conversation.otherUser
-    await this.props.setActiveChat(otherUser.username);
-    await this.props.setRead(conversation.id, otherUser.id);
+    await setActiveChat(conversation.otherUser.username);
+
+    // Trigger setRead() only when there are messages not read by currentUser
+    const unreadIds = conversation.messages.filter(message=>message.senderId===otherUser.id && message.readStatus===false).map(message=>message.id)
+    if (unreadIds.length !== 0) await setRead(conversation.id, otherUser.id, user.id);
   };
 
-  render() {
-    const { classes } = this.props;
-    const otherUser = this.props.conversation.otherUser;
-    return (
-      <Box
-        onClick={() => this.handleClick(this.props.conversation)}
-        className={classes.root}
-      >
-        <BadgeAvatar
-          photoUrl={otherUser.photoUrl}
-          username={otherUser.username}
-          online={otherUser.online}
-          sidebar={true}
-        />
-        <ChatContent conversation={this.props.conversation} />
-      </Box>
-    );
-  }
+  return (
+    <Box
+      onClick={() => handleClick(conversation)}
+      className={classes.root}
+    >
+      <BadgeAvatar
+        photoUrl={otherUser.photoUrl}
+        username={otherUser.username}
+        online={otherUser.online}
+        sidebar={true}
+      />
+      <ChatContent conversation={conversation} />
+    </Box>
+  );
 }
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.user
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
     setActiveChat: (id) => {
       dispatch(setActiveChat(id));
     },
-    setRead: (convoId, otherId) => {
-      dispatch(setRead(convoId, otherId));
+    setRead: (convoId, otherId, userId) => {
+      dispatch(setRead(convoId, otherId, userId));
     },
   };
 };
 
-export default connect(null, mapDispatchToProps)(withStyles(styles)(Chat));
+export default connect(mapStateToProps, mapDispatchToProps)(Chat);

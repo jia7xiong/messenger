@@ -10,7 +10,8 @@ router.post("/", async (req, res, next) => {
       return res.sendStatus(401);
     }
     const senderId = req.user.id;
-    const { recipientId, text, conversationId, sender, readStatus } = req.body;
+    const { recipient, text, conversationId, sender, readStatus } = req.body;
+    const recipientId = recipient.id;
 
     // if we already know conversation id, we can save time and just add it to message and return
     if (conversationId) {
@@ -23,6 +24,19 @@ router.post("/", async (req, res, next) => {
       recipientId
     );
 
+    // if we already know conversation id, we can save time and just add it to message and return
+    if (conversationId) {
+      // also check if the conversation is belong to the sender
+      if (conversationId===conversation.id) {
+        const message = await Message.create({ senderId, text, conversationId });
+        return res.json({ message, sender });
+      } else  {
+        const message = null;
+        return res.json({ message, sender });
+      }
+    }
+
+    // if we don't have conversation id, make sure it doesn't already exist
     if (!conversation) {
       // create conversation
       conversation = await Conversation.create({

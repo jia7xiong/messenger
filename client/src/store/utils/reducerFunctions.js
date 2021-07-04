@@ -2,16 +2,31 @@ export const addMessageToStore = (state, payload) => {
   const { message, sender } = payload;
   // if sender isn't null, that means the message needs to be put in a brand new convo
   if (sender !== null) {
-    const newConvo = {
-      id: message.conversationId,
-      otherUser: sender,
-      messages: [message],
-      user1: null,
-    };
-    newConvo.latestMessageText = message.text;
-    newConvo.unreadCount1 = 1;
-    newConvo.unreadCount2 = 0;
-    return [newConvo, ...state];
+    // check in case that there is a fakeConvo
+    // thus the message can be displayed even when other clients are searching 
+    const isConversationInState = state.some(convo => convo.otherUser.id === sender.id);
+    if (isConversationInState) {
+      return state.map((convo) => {
+        if (convo.otherUser.id === sender.id) {
+          const convoCopy = { ...convo };
+          convoCopy.id = message.conversationId;
+          convoCopy.messages.push(message);
+          convoCopy.latestMessageText = message.text;
+          return convoCopy;
+        } else {
+          return convo;
+        }
+      });
+    } 
+    else {
+      const newConvo = {
+        id: message.conversationId,
+        otherUser: sender,
+        messages: [message],
+      };
+      newConvo.latestMessageText = message.text;
+      return [newConvo, ...state];
+    }
   }
 
   return state.map((convo) => {
@@ -19,11 +34,6 @@ export const addMessageToStore = (state, payload) => {
       const convoCopy = { ...convo };
       convoCopy.messages.push(message);
       convoCopy.latestMessageText = message.text;
-      if (message.senderId === convoCopy.otherUser.id) {
-        convoCopy.hasOwnProperty('user1') ? convoCopy.unreadCount1 += 1 : convoCopy.unreadCount2 += 1;
-      } else {
-        convoCopy.hasOwnProperty('user1') ? convoCopy.unreadCount2 += 1 : convoCopy.unreadCount1 += 1;
-      }
 
       return convoCopy;
     } else {
@@ -83,9 +93,6 @@ export const addNewConvoToStore = (state, recipientId, message) => {
       newConvo.id = message.conversationId;
       newConvo.messages.push(message);
       newConvo.latestMessageText = message.text;
-      newConvo.user1 = null;
-      newConvo.unreadCount1 = 0;
-      newConvo.unreadCount2 = 1;
       return newConvo;
     } else {
       return convo;
@@ -98,11 +105,6 @@ export const addReadMessagesToStore = (state, payload) => {
   return state.map((convo) => {
     if (convo.id === conversationId) {
       const convoCopy = { ...convo };
-
-      // Clear the notification upon currentUser clicking the siderbar chat.
-      if (deCount) {
-        convoCopy.hasOwnProperty('user1') ? convoCopy.unreadCount1 = 0 : convoCopy.unreadCount2 = 0;
-      }
      
       let lastReadId = -1
       // Update the readStatus of all unread messages in the convo whose senderId match to ture
@@ -117,8 +119,8 @@ export const addReadMessagesToStore = (state, payload) => {
       });
 
       // Update the id of last message read by otherUser
-      if (!deCount) {
-        convoCopy.lastReadId = lastReadId;}
+      // when currentUser is not the one who clicks the siderBar chat and read messages
+      if (!deCount) convoCopy.lastReadId = lastReadId;
       
       return convoCopy;
     } else {
