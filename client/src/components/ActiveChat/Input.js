@@ -34,6 +34,7 @@ function Input (props) {
       recipient: otherUser,
       conversationId: conversationId,
       sender: conversationId ? null : user,
+      readStatus: false,
     };
     await postMessage(reqBody);
     setText("");

@@ -87,6 +87,22 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on("read", (data) => {
+    // Broadcast to the sender whose messages are just read
+    socket.broadcast.to(`room#${data.senderId}`).emit("read", {
+      conversationId: data.conversationId,
+      senderId: data.senderId,
+      deCount: false,
+    });
+
+    // Broadcast to other logged in devices of the user who clicks the siderBar chat and read messages
+    socket.broadcast.to(`room#${data.readerId}`).emit("read", {
+      conversationId: data.conversationId,
+      senderId: data.senderId,
+      deCount: true,
+    });
+  });
+
   socket.on("logout", (id) => {
     // set offline status of a user only when all his room is empty
     socket.leave(`room#${id}`);

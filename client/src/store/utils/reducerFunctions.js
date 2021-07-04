@@ -99,3 +99,34 @@ export const addNewConvoToStore = (state, recipientId, message) => {
     }
   });
 };
+
+export const addReadMessagesToStore = (state, payload) => {
+  const {conversationId, senderId, deCount} = payload
+  return state.map((convo) => {
+    if (convo.id === conversationId) {
+      const convoCopy = { ...convo };
+     
+      let readerLastReadId = -1
+      let senderLastReadId = -1
+      // Update the readStatus of all unread messages in the convo whose senderId match to ture
+      convoCopy.messages = convoCopy.messages.map((message) => {
+        if (message.senderId !== senderId && message.readStatus) readerLastReadId = message.id;
+        if (message.senderId === senderId && !message.readStatus) {
+          const mesCopy = {...message};
+          mesCopy.readStatus = true;
+          senderLastReadId = mesCopy.id;
+          return mesCopy;
+        }
+        else return message;
+      });
+
+      // Update the id of last message read by otherUser according to whether
+      // the currentUser is the one who clicks the siderBar chat and read messages
+      convoCopy.lastReadId = deCount ? readerLastReadId : senderLastReadId
+      
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  });
+};

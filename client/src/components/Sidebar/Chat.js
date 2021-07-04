@@ -3,6 +3,7 @@ import { Box } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
+import { setRead  } from "../../store/utils/thunkCreators";
 import { connect } from "react-redux";
 
 const useStyles = makeStyles((theme)=>({
@@ -20,13 +21,18 @@ const useStyles = makeStyles((theme)=>({
 }));
 
 function Chat (props) {
-  const handleClick = async (conversation) => {
-    await setActiveChat(conversation.otherUser.username);
-  };
-
-  const { setActiveChat, conversation } = props;
+  const { setActiveChat, conversation, setRead, user } = props;
   const otherUser = conversation.otherUser;
   const classes = useStyles();
+
+  const handleClick = async (conversation) => {
+    const otherUser = conversation.otherUser
+    await setActiveChat(conversation.otherUser.username);
+
+    // Trigger setRead() only when there are messages not read by currentUser
+    const unreadIds = conversation.messages.filter(message=>message.senderId===otherUser.id && message.readStatus===false).map(message=>message.id)
+    if (unreadIds.length !== 0) await setRead(conversation.id, otherUser.id, user.id);
+  };
 
   return (
     <Box
@@ -44,12 +50,21 @@ function Chat (props) {
   );
 }
 
+const mapStateToProps = (state) => {
+  return {
+    user: state.user
+  };
+};
+
 const mapDispatchToProps = (dispatch) => {
   return {
     setActiveChat: (id) => {
       dispatch(setActiveChat(id));
     },
+    setRead: (convoId, otherId, userId) => {
+      dispatch(setRead(convoId, otherId, userId));
+    },
   };
 };
 
-export default connect(null, mapDispatchToProps)(Chat);
+export default connect(mapStateToProps, mapDispatchToProps)(Chat);
