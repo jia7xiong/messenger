@@ -74,8 +74,7 @@ router.get("/", async (req, res, next) => {
 
       // find the id of the last message read by otherUser
       if (convoJSON.messages) {
-        const sortedMes = convoJSON.messages.slice().reverse();
-        const lastRead = sortedMes.find((mes) => mes.senderId===userId && mes.readStatus===true); 
+        const lastRead = convoJSON.messages.find((mes) => mes.senderId===userId && mes.readStatus===true); 
         convoJSON.lastReadId = lastRead ? lastRead.id : -1;
       }
 
